@@ -1,0 +1,29 @@
+public static JSONObject cmdCurl(String url){
+        JSONObject result = null;
+        String []cmds = {"curl", "-s",url};
+        ProcessBuilder pb=new ProcessBuilder(cmds);
+        pb.redirectErrorStream(true);
+        Process p;
+        List<String> list = new ArrayList<>();
+        try {
+            p = pb.start();
+            BufferedReader br=null;
+            String line=null;
+
+            br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+            while((line=br.readLine())!=null){
+                list.add(line);
+            }
+            if(!list.isEmpty()){
+                result = JSON.parseObject(list.get(list.size()-1));
+                if(result==null){
+                    LOGGER.error("JSON.parseObject null: "+list.get(list.size()-1));
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            LOGGER.error("cmdCurl error,",e);
+        }
+        return result;
+    }
